@@ -1,0 +1,25 @@
+# Python virtual environment
+.venv/
+
+# Environment variables
+.env
+
+# Python cache files
+__pycache__/
+*.pyc
+
+# Pytest cache
+.pytest_cache/
+
+# macOS files
+.DS_Store
+
+# Census data and generated outputs
+data/raw/*
+data/processed/*
+data/output/*
+
+# Keep the empty folder structure in Git
+!data/raw/.gitkeep
+!data/processed/.gitkeep
+!data/output/.gitkeep
