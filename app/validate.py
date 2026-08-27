@@ -108,5 +108,96 @@ def validate_staging(database_url=DATABASE_URL):
     print(f"Incorrect DGUID years: {invalid_dguid_year_count}")
 
 
+def validate_mapping_results(database_url=DATABASE_URL):
+    with psycopg.connect(database_url) as conn:
+        with conn.cursor() as cursor:
+            cursor.execute(
+                """
+                SELECT COUNT(*)
+                FROM geography_mapping_results;
+                """
+            )
+            result_count = cursor.fetchone()[0]
+
+            cursor.execute(
+                """
+                SELECT COUNT(*)
+                FROM staging_da_mappings;
+                """
+            )
+            staging_count = cursor.fetchone()[0]
+
+            cursor.execute(
+                """
+                SELECT COUNT(*)
+                FROM geography_mapping_results
+                WHERE relationship_type NOT IN (
+                    'ONE_TO_ONE',
+                    'ONE_TO_MANY',
+                    'MANY_TO_ONE',
+                    'MANY_TO_MANY'
+                );
+                """
+            )
+            invalid_type_count = cursor.fetchone()[0]
+
+            cursor.execute(
+                """
+                SELECT COUNT(*)
+                FROM geography_mapping_results
+                WHERE relationship_type = 'ONE_TO_ONE'
+                  AND same_id = FALSE;
+                """
+            )
+            unexpected_one_to_one_count = cursor.fetchone()[0]
+
+            cursor.execute(
+                """
+                SELECT COUNT(*)
+                FROM geography_mapping_results
+                WHERE relationship_type = 'MANY_TO_MANY'
+                  AND same_id = TRUE;
+                """
+            )
+            complex_same_id_count = cursor.fetchone()[0]
+
+            cursor.execute(
+                """
+                SELECT COUNT(*)
+                FROM (
+                    SELECT
+                        dauid_2021,
+                        dauid_2016,
+                        relationship_type,
+                        COUNT(*)
+                    FROM geography_mapping_results
+                    GROUP BY
+                        dauid_2021,
+                        dauid_2016,
+                        relationship_type
+                    HAVING COUNT(*) > 1
+                ) AS duplicates;
+                """
+            )
+            duplicate_count = cursor.fetchone()[0]
+
+    print(f"Staging rows: {staging_count}")
+    print(f"Mapping result rows: {result_count}")
+    print(f"Invalid relationship types: {invalid_type_count}")
+    print(
+        f"Unexpected one-to-one ID changes: "
+        f"{unexpected_one_to_one_count}"
+    )
+    print(
+        f"Same-ID many-to-many mappings: "
+        f"{complex_same_id_count}"
+    )
+    print(f"Duplicate mapping results: {duplicate_count}")
+
+
 if __name__ == "__main__":
+    print("Staging validation")
     validate_staging()
+
+    print("\nMapping validation")
+    validate_mapping_results()

@@ -18,3 +18,12 @@ CREATE TABLE staging_da_mappings (
     dadguid_2016 TEXT NOT NULL
 );
 
+CREATE TABLE geography_mapping_results (
+    result_id BIGSERIAL PRIMARY KEY,
+    dauid_2021 TEXT NOT NULL,
+    dauid_2016 TEXT NOT NULL,
+    dadguid_2021 TEXT NOT NULL,
+    dadguid_2016 TEXT NOT NULL,
+    relationship_type TEXT NOT NULL,
+    same_id BOOLEAN NOT NULL
+);
