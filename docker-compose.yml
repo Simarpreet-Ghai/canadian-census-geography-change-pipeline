@@ -1,0 +1,30 @@
+services:
+  db:
+    image: postgres:18
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: census_geography
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d census_geography"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    volumes:
+      - census_postgres_data:/var/lib/postgresql
+      - ./sql/01_create_tables.sql:/docker-entrypoint-initdb.d/01-create-tables.sql:ro
+      - ./docker/init-test-db.sql:/docker-entrypoint-initdb.d/02-create-test-db.sql:ro
+
+  app:
+    build: .
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@db:5432/census_geography
+      TEST_DATABASE_URL: postgresql://postgres:postgres@db:5432/census_geography_test
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - ./data:/app/data
+
+volumes:
+  census_postgres_data:

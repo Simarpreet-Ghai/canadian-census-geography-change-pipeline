@@ -1,0 +1,1 @@
+CREATE DATABASE census_geography_test;
