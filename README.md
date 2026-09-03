@@ -2,9 +2,13 @@
 
 A Python and PostgreSQL data pipeline I built using official Statistics Canada data to explore how Ontario census geographies changed between the 2016 and 2021 censuses.
 
-The main idea behind the project was simple: **if a geography keeps the same ID between census years, does that actually mean the geography stayed the same?**
+I wanted to work with real census data and see how these areas changed over time, especially whether the same geography ID in both years actually meant the area stayed the same.
 
-It turns out, not always.
+## Demo
+
+> 🔊 This demo has audio narration!
+
+https://github.com/user-attachments/assets/717559d5-9bad-4450-b5c6-9807a2282ea0
 
 ## Why I Built This
 
